@@ -11,9 +11,9 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='PyMU',
 
-    version='0.1.1',
+    version='0.1.2',
 
-    description='A C37.118 (PMU) data parser',
+    description='C37.118 (PMU) data parser',
     long_description=long_description,
 
     # The project's main homepage.
