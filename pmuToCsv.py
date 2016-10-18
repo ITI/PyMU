@@ -6,31 +6,23 @@ import socket
 import re
 import signal
 
-sys.path.append("PyMU")
-from lib.server import Server
-from lib.pmuDataFrame import DataFrame
-from lib.pmuLib import *
-import pdcTools
+from pymu.server import Server
+from pymu.pmuDataFrame import DataFrame
+from pymu.pmuLib import *
+import pymu.tools as tools
 
 CSV_DIR = "./data"
 
 RUNNING = True
 
-def csvPrint(dFrame, csv_handle, applyscaling):
+def csvPrint(dFrame, csv_handle):
 
     strOut = ""
     for i in range(0, len(dFrame.pmus)):
         strOut += dFrame.soc.formatted + ","
         for j in range(0, len(dFrame.pmus[i].phasors)):
-            if re.search('[ABC]P[IV]', dFrame.pmus[i].phasors[j].name):
-                if applyscaling:
-                    if re.search('[ABC]PV', dFrame.pmus[i].phasors[j].name):
-                        strOut += str(float(dFrame.pmus[i].phasors[j].mag)/1000.0) + ","
-                    if re.search('[ABC]PI', dFrame.pmus[i].phasors[j].name):
-                        strOut += str(float(dFrame.pmus[i].phasors[j].mag)/100.0) + ","
-                else:
-                    strOut += str(float(dFrame.pmus[i].phasors[j].mag)) + ","
-                strOut += str(dFrame.pmus[i].phasors[j].deg) + ","
+            #if re.search('[ABC]P[IV]', dFrame.pmus[i].phasors[j].name):
+            strOut += str(dFrame.pmus[i].phasors[j].deg) + ","
         strOut += str(dFrame.pmus[i].freq) + ","
         strOut += str(dFrame.pmus[i].dfreq)
         if i != (len(dFrame.pmus) - 1):
@@ -60,36 +52,39 @@ def createCsvDir():
     if (not os.path.isdir(CSV_DIR)):
         os.mkdir(CSV_DIR)
 
-def createCsvFile(stationName):
+def createCsvFile(confFrame):
 
     createCsvDir()
 
+    stationName = confFrame.stations[0].stn
     prettyDate = time.strftime("%Y%m%d_%H%M%S", time.localtime())
     csvFileName = "{}_{}.csv".format(prettyDate, stationName.rstrip())
     csv_path = "{}/{}".format(CSV_DIR, csvFileName)
-
-    applyscaling = False
-    if stationName.rstrip() == "RELAYA":
-        applyscaling = True;
 
     if (os.path.isfile(csv_path)):
         nextIndex = getNextIndex(csv_path)
         csvFileName = "{}_{}.csv".format(prettyDate, nextIndex)
         csv_path = "{}/{}".format(CSV_DIR, csvFileName)
 
-    csv_handle = open(csv_path, 'w')
-    csv_handle.write("Timestamp,Va_Mag,Va_Deg,Vb_Mag,Vb_Deg,Vc_Mag,Vc_Deg,Ia_Mag,Ia_Deg,Ib_Mag,Ib_Deg,Ic_Mag,Ic_Deg,Freq,ROCOF\n")
+    for x in confFrame.stations:
+        print(x.channels)
 
-    return csv_handle, applyscaling
+    csv_handle = open(csv_path, 'w')
+    csv_handle.write("Timestamp")
+    for ch in confFrame.stations[0].channels:
+        csv_handle.write(",{}".format(ch.rstrip()))
+    csv_handle.write(",Freq")
+    csv_handle.write(",ROCOF")
+    csv_handle.write("\n")
+
+    return csv_handle 
 
 def runPmuToCsv(confFrameIp, confFramePort, dataFramePort, frameId, index=-1, printInfo = True):
-
-    applyscaling = False
 
     print("#{}# Creating Connection\n\t{:<10} {}\n\t{:<10} {}\n\t{:<10} {}\n\t{:<10} {}\n----- ----- -----".format(index, "IP:", confFrameIp, "CMD Port:", confFramePort, "Data Port:", dataFramePort, "ID Code:", frameId))
     try:
         print("#{}# Reading Config Frame...".format(index)) if printInfo else None
-        confFrame = pdcTools.startDataCapture(frameId, confFrameIp, confFramePort) # IP address of openPDC
+        confFrame = tools.startDataCapture(frameId, confFrameIp, confFramePort) # IP address of openPDC
     except Exception as e:
         print("#{}# Exception: {}".format(index, e))
         print("#{}# Config Frame not received...Exiting".format(index))
@@ -100,7 +95,7 @@ def runPmuToCsv(confFrameIp, confFramePort, dataFramePort, frameId, index=-1, pr
     else:
         print("#{}# Failure!!".format(index)) if printInfo else None
 
-    csv_handle, applyscaling = createCsvFile(confFrame.stations[0].stn)
+    csv_handle = createCsvFile(confFrame)
 
     serv = Server(dataFramePort, "UDP", False) # Local port to receive data from openPDC
     serv.setTimeout(10)
@@ -115,7 +110,7 @@ def runPmuToCsv(confFrameIp, confFramePort, dataFramePort, frameId, index=-1, pr
             if d == '':
                 break
             dFrame = DataFrame(bytesToHexStr(d), confFrame) # Create dataFrame
-            csvPrint(dFrame, csv_handle, applyscaling)
+            csvPrint(dFrame, csv_handle)
             p += 1
         except KeyboardInterrupt:
             break
@@ -143,7 +138,7 @@ def runPmuToCsv(confFrameIp, confFramePort, dataFramePort, frameId, index=-1, pr
 if __name__ == "__main__":
     RUNNING = True
     if (len(sys.argv) != 5):
-        print("Usage: python <fileName> <configFrameIp> <configFramePort> <dataFramePort> <frameId>")
+        print("Usage: python <configFrameIp> <configFramePort> <dataFramePort> <frameId>")
         sys.exit()
 
     confFrameIp = sys.argv[1]
@@ -151,6 +146,6 @@ if __name__ == "__main__":
     dataFramePort = int(sys.argv[3])
     frameId = int(sys.argv[4])
 
-    runPmuToCsv(confFrameIp, confFramePort, dataFramePort, frameId)
+    runPmuToCsv(confFrameIp, confFramePort, dataFramePort, frameId, "")
 
 
