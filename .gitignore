@@ -4,5 +4,11 @@
 # Setup tools distribution folder
 /dist/
 
+# Data folder for storing example results
+/data/
+
 # Python egg metadata
 /*.egg-info
+
+# Swap files
+*.swp
