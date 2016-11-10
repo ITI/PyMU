@@ -3,7 +3,7 @@
 # but chose to go a different route
 # # # # # # # #
 
-from pmuEnum import *
+from .pmuEnum import *
 import math
 import random
 from datetime import datetime

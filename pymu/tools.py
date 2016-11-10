@@ -1,8 +1,8 @@
-from client import Client
-from pmuConfigFrame import ConfigFrame 
-from pmuCommandFrame import CommandFrame
-from aggPhasor import *
-from pmuDataFrame import *
+from .client import Client
+from .pmuConfigFrame import ConfigFrame 
+from .pmuCommandFrame import CommandFrame
+from .aggPhasor import *
+from .pmuDataFrame import *
 
 MAXFRAMESIZE = 65535
 

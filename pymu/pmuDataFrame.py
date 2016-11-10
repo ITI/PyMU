@@ -7,9 +7,9 @@ import math
 import struct
 import codecs
 from datetime import datetime
-from pmuLib import *
-from pmuFrame import PMUFrame
-from pmuEnum import *
+from .pmuLib import *
+from .pmuFrame import PMUFrame
+from .pmuEnum import *
 
 class DataFrame(PMUFrame):
 
