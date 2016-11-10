@@ -5,8 +5,8 @@
 # # # # # #
 
 from datetime import datetime
-from .pmuEnum import *
-from .pmuLib import *
+from pmuEnum import *
+from pmuLib import *
 
 class PMUFrame:
 

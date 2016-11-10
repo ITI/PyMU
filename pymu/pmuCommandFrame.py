@@ -3,11 +3,11 @@
 # based on C37.118-2011.  
 # # # # # #
 
-from .pmuFrame import PMUFrame
-from .pmuEnum import *
+from pmuFrame import PMUFrame
+from pmuEnum import *
 from time import time
 from datetime import datetime
-from .CRCCCITT import CRCCCITT
+from CRCCCITT import CRCCCITT
 
 class CommandFrame(PMUFrame):
 

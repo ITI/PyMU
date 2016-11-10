@@ -1,8 +1,8 @@
-from .client import Client
-from .pmuConfigFrame import ConfigFrame 
-from .pmuCommandFrame import CommandFrame
-from .aggPhasor import *
-from .pmuDataFrame import *
+from client import Client
+from pmuConfigFrame import ConfigFrame 
+from pmuCommandFrame import CommandFrame
+from aggPhasor import *
+from pmuDataFrame import *
 
 MAXFRAMESIZE = 65535
 
@@ -30,6 +30,21 @@ def readConfigFrame2(cli, debug=False):
 
     return configFrame
 
+def getDataSample(rcvr, debug=False):
+
+    fullHexStr = ""
+
+    if type(rcvr) == "client":
+        introHexStr = bytesToHexStr(rcvr.readSample(4))
+        lenToRead = int(introHexStr[5:], 16)
+        remainingHexStr = bytesToHexStr(rcvr.readSample(lenToRead))
+
+        fullHexStr = introHexStr + remainingHexStr
+    else:
+        fullHexStr = bytesToHexStr(rcvr.readSample(64000))
+
+    return fullHexStr
+
 # Requests configframe2 from OpenPDC, creates/returns a configFrame instance
 # for use later with data frames.  Provides default behavior if custom ports
 # are desired
@@ -45,7 +60,7 @@ def startDataCapture(idcode, ip, port=4712, tcpUdp="TCP", debug=False):
         configFrame = readConfigFrame2(cli, debug)
 
     turnDataOn(cli, idcode)
-    cli.closeSocket()
+    cli.stop()
 
     return configFrame
 

@@ -7,9 +7,9 @@
 
 import .pmuDataFrame
 from struct import *
-from .pmuLib import *
-from .pmuEnum import *
-from .CRCCCITT import CRCCCITT
+from pmuLib import *
+from pmuEnum import *
+from CRCCCITT import CRCCCITT
 import time
 
 class TransferFrame():

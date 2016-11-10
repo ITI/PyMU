@@ -3,9 +3,9 @@
 # based on C37.118-2011.  
 # # # # # #
 
-from .pmuFrame import PMUFrame
-from .pmuEnum import *
-from .pmuLib import *
+from pmuFrame import PMUFrame
+from pmuEnum import *
+from pmuLib import *
 
 class ConfigFrame(PMUFrame):
 

@@ -63,7 +63,7 @@ class Server:
             print("Invalid/No Data Received") if self.printInfo else None
 
     # Closes server connections
-    def stopServer(self):
+    def stop(self):
         print("\n**********") if self.printInfo else None
         if self.useUdp:
             self.socketConn.close()
@@ -75,3 +75,6 @@ class Server:
 
     def setTimeout(self, numOfSecs):
         self.socketConn.settimeout(numOfSecs)
+
+    def __class__(self):
+        return "server"

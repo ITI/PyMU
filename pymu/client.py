@@ -71,9 +71,11 @@ class Client:
         else:
             self.theSocket.send(bytesToSend)
 
-    def closeSocket(self):
+    def stop(self):
         self.theSocket.close()
 
     def setTimeout(self, numOfSecs):
         self.theSocket.settimeout(numOfSecs)
 
+    def __class__(self):
+        return "client"
