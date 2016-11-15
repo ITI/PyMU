@@ -1,16 +1,26 @@
-# # # # # #
-# Super Class for creating all types of frames
-# based on C37.118-2011. Contains the fields common
-# to all C37.118 frames
-# # # # # #
+"""
+Super Class for creating all types of frames based on C37.118. 
+Contains the fields common to all C37.118 frames
+"""
 
 from datetime import datetime
 from .pmuEnum import *
 from .pmuLib import *
 
 class PMUFrame:
+    """
+    Super class for all C37.118-2005/C37.118-2011 frames
+    """
 
     def __init__(self, frameInHexStr, debug=False):
+        """
+        PMUFrame constructor
+
+        :param frameInHexStr: Hex representation of frame bytes
+        :type frameInHexStr: str
+        :param debug: Print debug statements or not
+        :type debug: bool
+        """
      
         self.sync = None
         self.framesize = None
@@ -26,52 +36,64 @@ class PMUFrame:
         self.parseFRAMESIZE()
 
     def finishParsing(self):
+        """
+        When getting the config frame, the size is unknown.  After creating a PMUFrame with the first 4 bytes, the remaining frame bytes are read
+        and added to self.frame.  Once that is populated the remaining fields can be parsed
+        """
         self.parseIDCODE()
         self.parseSOC()
         self.parseFRACSEC()
         self.parseCHK()
 
     def parseSYNC(self):
+        """Parse frame synchronization word"""
         self.sync = SYNC(self.frame[:4])
         self.updateLength(4)
 
     def parseFRAMESIZE(self):
+        """Parse frame size"""
         framesizeSize = 4
         self.framesize = int(self.frame[self.length:self.length+framesizeSize], 16)
         self.updateLength(framesizeSize)
         print("FRAMESIZE: ", self.framesize) if self.dbg else None
 
     def parseIDCODE(self):
+        """Parse data stream ID number"""
         idcodeSize = 4
         self.idcode = int(self.frame[self.length:self.length+idcodeSize], 16)
         self.updateLength(idcodeSize)
         print("IDCODE: ", self.idcode) if self.dbg else None
 
     def parseSOC(self):
+        """Parse timestamp, 32-bit unsigned"""
         socSize = 8
         self.soc = SOC(self.frame[self.length:self.length+socSize])
         self.updateLength(socSize)
 
     def parseFRACSEC(self):
+        """Parse fraction of second and time quality"""
         fracsecSize = 8
         self.fracsec = int(self.frame[self.length:self.length+fracsecSize], 16)
         self.updateLength(fracsecSize)
         print("FRACSEC: ", self.fracsec) if self.dbg else None
 
     def parseCHK(self):
+        """Parse CRC-CCITT word"""
         chkSize = 4
         self.chk = self.frame[-chkSize:]
         print("CHK: ", self.chk) if self.dbg else None
 
     def updateLength(self, sizeToAdd):
+        """Keeps track of index for grabbing each field of the frame"""
         self.length = self.length + sizeToAdd
 
 class SYNC:
+    """Class for describing the frame synchronization word"""
     
-    syncHex = None
-    frameType = None
-    frameVers = None
-    dbg = False
+    #syncHex = None
+    #frameType = None
+    #frameVers = None
+    #dbg = False
 
     def __init__(self, syncHexStr, debug=False):
         self.dbg = debug
@@ -80,12 +102,14 @@ class SYNC:
         self.parseVers()
 
     def parseType(self):
+        """Parse frame type"""
         typeBinStr = hexToBin(self.syncHex[2], 3)
         typeNum = int(typeBinStr, 2)
         self.frameType = FrameType(typeNum).name
         print("Type: ", self.frameType) if self.dbg else None
 
     def parseVers(self):
+        """Parse frame version"""
         versBinStr = hexToBin(self.syncHex[3], 4)
         self.frameVers = int(versBinStr, 2)
         print("Vers: ", self.frameVers) if self.dbg else None

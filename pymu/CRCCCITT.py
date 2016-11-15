@@ -1,14 +1,13 @@
-# -*- coding: utf8 -*-
+"""
+..  module:: CRCCCITT
+    :platform: Unix, Windows
+    :synopsis: Used to calculate checksum of packet when creating custom frames
+        comes in 3 flavors
+        (XModem)  starting value: 0x0000
+                  starting value: 0xffff
+                  starting value: 0x1d0f
 
-#
-# CRC CCITT
-#
-# comes in 3 flavors
-# (XModem)  starting value: 0x0000
-#           starting value: 0xffff
-#           starting value: 0x1d0f
-#
-
+"""
 
 from ctypes import c_ushort
 

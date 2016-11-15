@@ -79,7 +79,7 @@ def createCsvFile(confFrame):
 def runPmuToCsv(ip, tcpPort, frameId, udpPort, index=-1, printInfo = True):
     global RUNNING
 
-    print("#{}# Creating Connection\n\t{:<10} {}\n\t{:<10} {}\n\t{:<10} {}\n".format(index, "IP:", ip, "Port:", tcpPort, "ID Code:", frameId))
+    print("#{}# Creating Connection\n\t{:<10} {}\n\t{:<10} {}\n\t{:<10} {}".format(index, "IP:", ip, "Port:", tcpPort, "ID Code:", frameId))
 
     if udpPort > -1:
         print("\t{:<10} {}".format("UDP Port:", udpPort))

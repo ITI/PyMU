@@ -1,11 +1,11 @@
-# # # # # #
-# Custom class meant to create a message
-# that can be passed to a socket connection.
-# Only contains timestamp, phasor values, and 
-# ID for each phasor
-# # # # # #
+"""
+..  module:: transferFrame
+    :platform: Unix, Windows
+    :synopsis: Custom class meant to create a message that can be passed to a socket connection.  Only contains timestamp, phasor values, and ID for each phasor
+..  moduleauthor:: Chris Drew <cdrew3@illinois.edu>
 
-import .pmuDataFrame
+"""
+
 from struct import *
 from .pmuLib import *
 from .pmuEnum import *
