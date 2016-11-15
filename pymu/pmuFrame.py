@@ -65,13 +65,13 @@ class PMUFrame:
         print("IDCODE: ", self.idcode) if self.dbg else None
 
     def parseSOC(self):
-        """Parse timestamp, 32-bit unsigned"""
+        """Parse second-of-century timestamp"""
         socSize = 8
         self.soc = SOC(self.frame[self.length:self.length+socSize])
         self.updateLength(socSize)
 
     def parseFRACSEC(self):
-        """Parse fraction of second and time quality"""
+        """Parse fraction of second and time quality word"""
         fracsecSize = 8
         self.fracsec = int(self.frame[self.length:self.length+fracsecSize], 16)
         self.updateLength(fracsecSize)
@@ -90,11 +90,6 @@ class PMUFrame:
 class SYNC:
     """Class for describing the frame synchronization word"""
     
-    #syncHex = None
-    #frameType = None
-    #frameVers = None
-    #dbg = False
-
     def __init__(self, syncHexStr, debug=False):
         self.dbg = debug
         self.syncHex = syncHexStr
@@ -115,18 +110,7 @@ class SYNC:
         print("Vers: ", self.frameVers) if self.dbg else None
 
 class SOC:
-
-    socHex = None
-    secCount = None
-    yyyy = None
-    mm = None
-    dd = None
-    hh = None
-    mi = None
-    ss = None
-    formatted = None
-    utcSec = None
-    dbg = False
+    """Class for second-of-century (SOC) word (32 bit unsigned)"""
 
     def __init__(self, socHexStr, debug=False):
         self.dbg = debug
@@ -136,6 +120,7 @@ class SOC:
         print("SOC: ", self.secCount, " - ", self.formatted) if self.dbg else None
 
     def parseSecCount(self):
+        """Parse SOC into UTC timestamp and pretty formatted timestamp"""
         parsedDate = datetime.fromtimestamp(self.secCount)
         self.yyyy = parsedDate.year
         self.mm = parsedDate.month
