@@ -1,6 +1,6 @@
-# # # # # #
-# File containing all the enums used for PyMU
-# # # # # #
+"""
+File containing all the enums used for PyMU
+"""
 
 from enum import Enum
 

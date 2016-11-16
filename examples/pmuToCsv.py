@@ -69,7 +69,7 @@ def createCsvFile(confFrame):
     csv_handle = open(csv_path, 'w')
     csv_handle.write("Timestamp")
     for ch in confFrame.stations[0].channels:
-        csv_handle.write(",{}".format(ch.rstrip()))
+        csv_handle.write(",{}".format(ch.rstrip())) if ch.rstrip() != '' else None
     csv_handle.write(",Freq")
     csv_handle.write(",ROCOF")
     csv_handle.write("\n")

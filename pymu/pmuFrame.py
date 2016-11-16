@@ -22,12 +22,6 @@ class PMUFrame:
         :type debug: bool
         """
      
-        self.sync = None
-        self.framesize = None
-        self.idcode = None
-        self.soc = None
-        self.fracsec = None
-        self.chk = None
         self.length = 0
 
         self.dbg = debug
@@ -84,7 +78,7 @@ class PMUFrame:
         print("CHK: ", self.chk) if self.dbg else None
 
     def updateLength(self, sizeToAdd):
-        """Keeps track of index for grabbing each field of the frame"""
+        """Keeps track of index for overall frame"""
         self.length = self.length + sizeToAdd
 
 class SYNC:

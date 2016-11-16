@@ -1,7 +1,6 @@
-# # # # # #
-# Class for creating a Data Frame
-# based on C37.118-2011.  
-# # # # # #
+"""
+Class for creating a Data Frame based on C37.118-2011  
+"""
 
 import math
 import struct
@@ -12,6 +11,7 @@ from .pmuFrame import PMUFrame
 from .pmuEnum import *
 
 class DataFrame(PMUFrame):
+    """Class for data frame"""
 
     def __init__(self, frameInHexStr, theConfigFrame, debug=False):
 
@@ -30,6 +30,7 @@ class DataFrame(PMUFrame):
         self.updateSOC()
 
     def parsePmus(self):
+        """Parses each PMU present in the data frame"""
         print("***** PHASORS *****") if self.dbg else None
 
         nextPmuStartingPos = 28
@@ -48,6 +49,7 @@ class DataFrame(PMUFrame):
         self.soc.utcSec = (dt - datetime(1970, 1, 1)).total_seconds()
         
 class PMU:
+    """Class for a PMU in a data frame"""
 
     def __init__(self, pmuHexStr, theStationFrame, debug=False):
     
@@ -78,15 +80,18 @@ class PMU:
         self.parseDigital()
 
     def updateLength(self, sizeToAdd):
+        """Keeps track of length for PMU frame only"""
         self.length = self.length + sizeToAdd
 
     def parseStat(self):
+        """Parse bit mapped flags field"""
         l = 4
         print("STAT:", self.pmuHex[self.length:self.length+l]) if self.dbg else None
         self.stat = Stat(self.pmuHex[self.length:self.length+l])
         self.updateLength(l)
 
     def parsePhasors(self):
+        """Parse phasor estimates from PMU"""
         print("Phasors") if self.dbg else None
         self.phasors = [None]*self.numOfPhsrs
         print("NumOfPhsrs:", self.numOfPhsrs) if self.dbg else None
@@ -97,6 +102,7 @@ class PMU:
             self.updateLength(self.phasors[i].length)
 
     def parseFreq(self):
+        """Parse frequency"""
         l = 4 if self.stationFrame.freqType == "INTEGER" else 8
         print("FREQ:", self.pmuHex[self.length:self.length+l]) if self.dbg else None
         unpackStr = '!h' if l == 4 else '!f'
@@ -105,6 +111,7 @@ class PMU:
         print("FREQ:", self.freq) if self.dbg else None
 
     def parseDfreq(self):
+        """Parse rate of change of frequency (ROCOF)"""
         l = 4 if self.stationFrame.freqType == "INTEGER" else 8
         print("DFREQ: ", self.pmuHex[self.length:self.length+l]) if self.dbg else None
         unpackStr = '!h' if l == 4 else '!f'
@@ -113,6 +120,7 @@ class PMU:
         print("DFREQ:", self.dfreq) if self.dbg else None
 
     def parseAnalog(self):
+        """Parse analog data"""
         self.analogs = [None]*self.numOfAnlg
         l = 4 if self.stationFrame.anlgType == "INTEGER" else 8
         unpackStr = "!h" if l == 4 else "!f"
@@ -125,6 +133,7 @@ class PMU:
             self.updateLength(l)
 
     def parseDigital(self):
+        """Parse digital data"""
         self.digitals = [None]*self.numOfDgtl
         l = 4
         totValBin = hexToBin(self.pmuHex[self.length:self.length+l], 16)
@@ -137,6 +146,7 @@ class PMU:
             self.updateLength(l)
 
 class Phasor:
+    """Class for holding phasor information"""
 
     def __init__(self, thePhsrValHex, theStationFrame, theName, debug=False):
         
@@ -160,17 +170,20 @@ class Phasor:
         self.parseVal()
 
     def parseFmt(self):
+        """Parse format and type of phasor"""
         self.phsrFmt = self.stationFrame.phsrFmt
         self.phsrType = self.stationFrame.phsrType
         self.length = 8 if self.phsrType == "INTEGER" else 16
 
     def parseVal(self):
+        """Parse phasor value"""
         if self.phsrFmt == "RECT":
            self.toRect(self.phsrValHex[:self.length])
         else:
             self.toPolar(self.phsrValHex[:self.length])
  
     def toRect(self, hexVal):
+        """Convert bytes to rectangular values"""
         hex1 = hexVal[:int(self.length/2)]
         hex2 = hexVal[int(self.length/2):]
         unpackStr = "!h" if self.phsrType == "INTEGER" else "!f"
@@ -186,6 +199,7 @@ class Phasor:
         print("Deg:", "=", self.deg) if self.dbg else None
 
     def toPolar(self, hexVal):
+        """Convert bytes to polar values"""
         hex1 = hexVal[:int(self.length/2)]
         hex2 = hexVal[int(self.length/2):]
         unpackStr = "!h" if self.phsrType == "INTEGER" else "!f"
@@ -203,6 +217,7 @@ class Phasor:
         print("Deg:", "=", self.deg) if self.dbg else None
 
 class Stat:
+    """Class for foling bit mapped flags"""
 
     def __init__(self, statHexStr, debug=False):
 
@@ -230,38 +245,47 @@ class Stat:
         self.parseTriggerReason()
 
     def parseDataError(self):
+        """Parse data error bits"""
         self.dataError = DataError(int(hexToBin(self.statHex[0], 4)[:2], 2)).name 
         print("STAT: ", self.dataError) if self.dbg else None
 
     def parsePmuSync(self):
+        """Parse PMU sync bit"""
         self.pmuSync = PmuSync(int(hexToBin(self.statHex[0], 4)[2], 2)).name
         print("PMUSYNC: ", self.pmuSync) if self.dbg else None
 
     def parseSorting(self):
+        """Parse data sorting bit"""
         self.sorting = Sorting(int(hexToBin(self.statHex[0], 4)[3], 2)).name
         print("SORTING: ", self.sorting) if self.dbg else None
 
     def parsePmuTrigger(self):
+        """Parse PMU trigger bit"""
         self.pmuTrigger = Trigger(int(hexToBin(self.statHex[1], 4)[0], 2)).name
         print("PMUTrigger: ", self.pmuTrigger) if self.dbg else None
 
     def parseConfigChange(self):
+        """Parse config change bit"""
         self.configChange = ConfigChange(int(hexToBin(self.statHex[1], 4)[1], 2)).name
         print("ConfigChange: ", self.configChange) if self.dbg else None
 
     def parseDataModified(self):
+        """Parse data modified bit"""
         self.dataModified = DataModified(int(hexToBin(self.statHex[1], 4)[2], 2)).name
         print("DataModified: ", self.dataModified) if self.dbg else None
 
     def parseTimeQuality(self):
+        """Parse time quality bits"""
         self.unlockedTime = TimeQuality(int(hexToBin(self.statHex[1:3], 8)[3:6], 2)).name
         print("TimeQuality: ", self.unlockedTime) if self.dbg else None
 
     def parseUnlockTime(self):
+        """Parse unlocked time bits"""
         self.unlockedTime = UnlockedTime(int(hexToBin(self.statHex[2], 4)[2:], 2)).name
         print("UnlockTime: ", self.unlockedTime) if self.dbg else None
 
     def parseTriggerReason(self):
+        """Parse trigger reason bits"""
         self.triggerReason = TriggerReason(int(hexToBin(self.statHex[3], 4), 2)).name
         print("TriggerReason: ", self.triggerReason) if self.dbg else None
 
