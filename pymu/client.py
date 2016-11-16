@@ -3,13 +3,20 @@ import sys
 import os
 import time
 
-# # # # # #
-# Class do easily create a client without needing to 
-# without needing to consult socket library.  Supports
-# TCP/UDP and UNIX/INET sockets
-# # # # # #
-
 class Client:
+    """
+    Client class that creates a client and provides simple functions for connecting to PMUs or PDCs without needing
+    to directly use Python's socket library.  Supports INET and UNIX sockets
+
+    :param theDestIp: IP address to connect to.  If using unix socket this is the file name to connect to
+    :type theDestIp: str
+    :param theDestPort: Port to connect to
+    :type theDestPort: int
+    :param proto: Protocol to use.  Accepts TCP or UDP
+    :type proto: str
+    :param sockType: Type of socket to create.  INET or UNIX
+    :type sockType: str
+    """
 
     def __init__(self, theDestIp, theDestPort, proto="TCP", sockType="INET"):
     
@@ -34,6 +41,7 @@ class Client:
         self.connectToDest()
 
     def createSocket(self):
+        """Create socket based on constructor arguments""" 
         if self.useUdp:
             if self.unixSock:
                 self.theSocket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -46,6 +54,7 @@ class Client:
                 self.theSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connectToDest(self):
+        """Connect socket to destination IP:Port.  If UNIX socket then use destIP"""
         if not self.useUdp:
             if self.unixSock:
                 self.theSocket.connect(self.destIp)
@@ -53,6 +62,14 @@ class Client:
                 self.theSocket.connect(self.destAddr)
 
     def readSample(self, bytesToRead):
+        """
+        Read a sample from the socket
+
+        :param bytesToRead: Number of bytes to read from socket
+        :type bytesToRead: int
+
+        :return: Byte array of data read from socket
+        """
         try:
             if self.useUdp:
                 return self.theSocket.recvfrom(bytesToRead)
@@ -63,6 +80,11 @@ class Client:
             return ""
 
     def sendData(self, bytesToSend):
+        """Send bytes to destination
+
+        :param bytesToSend: Number of bytes to send
+        :type bytesToSend: int
+        """
         if self.useUdp:
             if self.unixSock:
                 self.theSocket.sendto(bytesToSend, self.destIp)
@@ -72,9 +94,15 @@ class Client:
             self.theSocket.send(bytesToSend)
 
     def stop(self):
+        """Close the socket connection"""
         self.theSocket.close()
 
     def setTimeout(self, numOfSecs):
+        """Set socket timeout
+        
+        :param numOfSecs: Time to wait for socket action to complete before throwing timeout exception
+        :type numOfSecs: int
+        """
         self.theSocket.settimeout(numOfSecs)
 
     def __class__(self):

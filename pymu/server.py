@@ -1,11 +1,20 @@
-#!/usr/bin/python
-
 import socket
 import sys
 import os
 import time
 
 class Server:
+    """
+    Server class that creates a server and provides simple functions for incoming connections/data from PMUs or PDCs without needing
+    to directly use Python's socket library.  Supports INET sockets only (will eventually be updated).
+
+    :param thePort: Local port to listen on
+    :type thePort: int
+    :param proto: Protocol to use.  Accepts TCP or UDP
+    :type proto: str
+    :param printInfo: Specifies whether or not to print debug statements
+    :type printInfo: bool
+    """
     
     def __init__(self, thePort, proto="TCP", printInfo=False):
 
@@ -26,8 +35,12 @@ class Server:
         self.startServer(5)
         self.waitForConnection()
 
-    # Starts the python server and listens for connections
     def startServer(self, queueLen):
+        """Starts the python server and listens for connections
+
+        :param queueLen: Max number of queued connections.  Usually defaults to 5
+        :type queueLen: int
+        """
         if self.useUdp:
             self.socketConn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             print("Starting UDP Server on", self.serverAddr) if self.printInfo else None
@@ -38,8 +51,8 @@ class Server:
             self.socketConn.bind(self.serverAddr)
             self.socketConn.listen(queueLen)
 
-    # Will block program execution until a connection is achieved
     def waitForConnection(self):
+        """Will block program execution until a connection is achieved"""
         print("**********") if self.printInfo else None
         if self.useUdp:
             return
@@ -47,8 +60,8 @@ class Server:
 
         self.connection, self.clientAddr = self.socketConn.accept()
 
-    # Will read exactly exactly as many bytes as specified by length and return them as an int
     def readSample(self, length):
+        """Will read exactly exactly as many bytes as specified by length and return them as an int"""
         data = ""
         if self.useUdp:
             data, address = self.socketConn.recvfrom(length)
@@ -62,8 +75,8 @@ class Server:
         else:
             print("Invalid/No Data Received") if self.printInfo else None
 
-    # Closes server connections
     def stop(self):
+        """Closes server connections"""
         print("\n**********") if self.printInfo else None
         if self.useUdp:
             self.socketConn.close()
@@ -74,6 +87,11 @@ class Server:
         print("Stopping", self.serverAddr) if self.printInfo else None
 
     def setTimeout(self, numOfSecs):
+        """Set socket timeout
+        
+        :param numOfSecs: Time to wait for socket action to complete before throwing timeout exception
+        :type numOfSecs: int
+        """
         self.socketConn.settimeout(numOfSecs)
 
     def __class__(self):

@@ -7,14 +7,16 @@ from .pmuEnum import *
 from .pmuLib import *
 
 class ConfigFrame(PMUFrame):
-    """Parses Config Frame (1 or 2)"""
+    """Parses Config Frame (1 or 2)
+
+    :param frameInHexStr: Config frame as byte array in hex str format
+    :type frameInHexStr: str
+    :param debug: Print debug statements
+    :type debug: bool
+    """
 
     def __init__(self, frameInHexStr, debug=False):
         super().__init__(frameInHexStr, debug) # Parse words common to all frames first
-        #self.time_base = None
-        #self.num_pmu = None
-        #self.stations = None
-        #self.datarate = None
                 
     def finishParsing(self):
         """After first 4 bytes are received, the client reads the remaining config frame bytes.  This function parses those remaining bytes"""
@@ -63,7 +65,13 @@ class TimeBase:
         self.baseDecStr = int(timeBaseHexStr[1:], 16)
 
 class Station:
-    """Class for parsing station information including all PMU information.  Fields 8-19"""
+    """Class for parsing station information including all PMU information.  Fields 8-19
+
+    :param theStationHex: Station fields in hex str format
+    :type theStationHex: str
+    :param debug: Print debug statements
+    :type debug: bool
+    """
 
     def __init__(self, theStationHex, debug=False): 
 
@@ -102,7 +110,11 @@ class Station:
         self.parseCFGCNT()
 
     def updateLength(self, sizeToAdd):
-        """Updates length of station frames only"""
+        """Updates length of station frames only
+        
+        :param sizeToAdd: Number of bytes to add to frame length
+        :type sizeToAdd: int
+        """
         self.length = self.length + sizeToAdd
 
     def parseSTN(self):
@@ -210,7 +222,11 @@ class Station:
         print("CFGCNT: ", self.cfgcnt) if self.dbg else None
 
 class Phunit:
-    """Class for conversion factor for phasor channels"""
+    """Class for conversion factor for phasor channels
+    
+    :param phunitHexStr: Conversion factor field in hex str format
+    :type phunitHexStr: str
+    """
 
     def __init__(self, phunitHexStr, debug=False):
         self.voltORcurr = None
@@ -231,8 +247,11 @@ class Phunit:
         self.value = int(self.phunitHex[2:], 16)
 
 class Anunit:
-    """Class for  conversion factor for analog channels"""
+    """Class for conversion factor for analog channels
 
+    :param anunitHexStr: Conversion factor for analog channels field in hex str format
+    :type anunitHexStr: str
+    """
     def __init__(self, anunitHexStr, debug=False):
 
         self.anlgMsrmnt = None
@@ -253,7 +272,11 @@ class Anunit:
         self.userDefiend = self.anunitHex[1:]
 
 class Digunit:
-    """Class for mask of digital status words"""
+    """Class for mask of digital status words
+
+    :param digunitHexStr: Conversion factor for digital status channels field in hex str format
+    :type digunitHexStr: str
+    """
 
     def __init__(self, digunitHexStr, debug=False):
         self.dbg = debug

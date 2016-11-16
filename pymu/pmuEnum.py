@@ -1,5 +1,5 @@
 """
-File containing all the enums used for PyMU
+File containing all the enums used for PyMU.  For detailed explanations please look at C37.118-2005 standard
 """
 
 from enum import Enum

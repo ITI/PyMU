@@ -1,8 +1,3 @@
-"""
-Super Class for creating all types of frames based on C37.118. 
-Contains the fields common to all C37.118 frames
-"""
-
 from datetime import datetime
 from .pmuEnum import *
 from .pmuLib import *
@@ -10,6 +5,11 @@ from .pmuLib import *
 class PMUFrame:
     """
     Super class for all C37.118-2005/C37.118-2011 frames
+
+    :param frameInHexStr: Bytes from frame (any time) in hex str format
+    :type strameInHexStr: str
+    :param debug: Print debug statements
+    :type debug: bool
     """
 
     def __init__(self, frameInHexStr, debug=False):
@@ -82,7 +82,13 @@ class PMUFrame:
         self.length = self.length + sizeToAdd
 
 class SYNC:
-    """Class for describing the frame synchronization word"""
+    """Class for describing the frame synchronization word
+
+    :param syncHexStr: Sync byte array in hex str format
+    :type syncHexStr: str
+    :param debug: Print debug statements
+    :type debug: bool
+    """
     
     def __init__(self, syncHexStr, debug=False):
         self.dbg = debug
@@ -104,7 +110,13 @@ class SYNC:
         print("Vers: ", self.frameVers) if self.dbg else None
 
 class SOC:
-    """Class for second-of-century (SOC) word (32 bit unsigned)"""
+    """Class for second-of-century (SOC) word (32 bit unsigned)
+
+    :param socHexStr: Second-of-century byte array in hex str format
+    :type socHexStr: str
+    :param debug: Print debug statements
+    :type debug: bool
+    """
 
     def __init__(self, socHexStr, debug=False):
         self.dbg = debug

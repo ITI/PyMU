@@ -1,7 +1,3 @@
-"""
-Class for creating a Data Frame based on C37.118-2011  
-"""
-
 import math
 import struct
 import codecs
@@ -11,7 +7,16 @@ from .pmuFrame import PMUFrame
 from .pmuEnum import *
 
 class DataFrame(PMUFrame):
-    """Class for data frame"""
+    """
+    Class for creating a Data Frame based on C37.118-2011  
+
+    :param frameInHexStr: Data frame bytes as hex str
+    :type frameInHexStr: str
+    :param theConfigFrame: Config frame describing the data frame
+    :type theConfigFrame: ConfigFrame
+    :param debug: Print debug statements
+    :type debug: bool
+    """
 
     def __init__(self, frameInHexStr, theConfigFrame, debug=False):
 
@@ -49,7 +54,15 @@ class DataFrame(PMUFrame):
         self.soc.utcSec = (dt - datetime(1970, 1, 1)).total_seconds()
         
 class PMU:
-    """Class for a PMU in a data frame"""
+    """Class for a PMU in a data frame
+    
+    :param pmuHexStr: Bytes of PMU fields in hex str format
+    :type pmuHexStr: str
+    :param theStationFrame: Station fields from config frame describing PMU data
+    :type theStationFrame: Station
+    :param debug: Print debug statements
+    :type debug: bool
+    """
 
     def __init__(self, pmuHexStr, theStationFrame, debug=False):
     
@@ -146,7 +159,17 @@ class PMU:
             self.updateLength(l)
 
 class Phasor:
-    """Class for holding phasor information"""
+    """Class for holding phasor information
+
+    :param thePhsrValHex: Phasor values in hex str format
+    :type thePhsrValHex: str
+    :param theStationFrame: Station frame which describe data format
+    :type theStationFrame: Station
+    :param theName: Name of phasor channel
+    :type theName: str
+    :param debug: Print debug statements
+    :type debug: bool
+    """
 
     def __init__(self, thePhsrValHex, theStationFrame, theName, debug=False):
         
@@ -217,7 +240,13 @@ class Phasor:
         print("Deg:", "=", self.deg) if self.dbg else None
 
 class Stat:
-    """Class for foling bit mapped flags"""
+    """Class for foling bit mapped flags
+
+    :param statHexStr: Stat field in hex string format
+    :type statHexStr: str
+    :param debug: Print debug statements
+    :type debug: bool
+    """
 
     def __init__(self, statHexStr, debug=False):
 

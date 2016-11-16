@@ -5,7 +5,7 @@ Tools for common functions relayed to commanding, reading, and parsing PMU data
 from .client import Client
 from .pmuConfigFrame import ConfigFrame 
 from .pmuCommandFrame import CommandFrame
-from .aggPhasor import *
+#from .aggPhasor import *
 from .pmuDataFrame import *
 
 MAXFRAMESIZE = 65535

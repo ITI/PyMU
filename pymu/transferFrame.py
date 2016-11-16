@@ -1,18 +1,16 @@
-"""
-..  module:: transferFrame
-    :platform: Unix, Windows
-    :synopsis: Custom class meant to create a message that can be passed to a socket connection.  Only contains timestamp, phasor values, and ID for each phasor
-..  moduleauthor:: Chris Drew <cdrew3@illinois.edu>
-
-"""
-
 from struct import *
 from .pmuLib import *
 from .pmuEnum import *
-from .CRCCCITT import CRCCCITT
+from PyCRC.CRCCCITT import CRCCCITT
 import time
 
 class TransferFrame():
+    """
+    Custom class meant to create a message that can be passed to a socket connection.  Only contains timestamp, phasor values, and ID for each phasor
+
+    :param inputDataFrame: Populated data frame containing measurement values 
+    :type inputDataFrame: pmuDataFrame
+    """
 
     def __init__(self, inputDataFrame):
         self.header = "AAFF"
@@ -29,6 +27,7 @@ class TransferFrame():
         self.createFullFrame()
 
     def parseDataSample(self):
+        """Parse the input data sample"""
         self.length += len(self.header)/2 # Separator
         self.timestamp = self.dataFrame.soc.utcSec + (self.dataFrame.fracsec / self.dataFrame.configFrame.time_base.baseDecStr) 
         self.parsePhasors()
@@ -38,6 +37,7 @@ class TransferFrame():
         self.length += len(pack('I', int(self.length)))  # Unsigned Int 
 
     def parsePhasors(self):
+        """Parse the phasors in the data sample to extract measurements"""
         ident = 0
         for p in range(0, self.dataFrame.configFrame.num_pmu):
             for ph in range(0, self.dataFrame.pmus[p].numOfPhsrs):
@@ -49,12 +49,14 @@ class TransferFrame():
         self.numOfPhasors = len(self.phasors)
 
     def genCrc(self):
+        """Generate CRC-CCITT"""
         crcCalc = CRCCCITT('FFFF')
         frameInBytes = bytes.fromhex(self.fullFrameHexStr)
         theCrc = hex(crcCalc.calculate(frameInBytes))[2:].zfill(4)
         self.crc = theCrc.upper()
 
     def createFullFrame(self):
+        """Put all the pieces to together to create full transfer frame"""
         self.fullFrameHexStr += self.header
         self.fullFrameHexStr += intToHexStr(int(self.length)).zfill(8).upper()
         self.fullFrameHexStr += doubleToHexStr(self.timestamp).zfill(16).upper()
@@ -71,6 +73,15 @@ class TransferFrame():
 # This field is repeated as needed in the frame
 # # # # # #
 class PhasorField():
+    """Class to hold simplified phasor fields
+
+    :param phasor: Phasor containing measurements
+    :type phasor: Phasor
+    :param idNum: Frame ID to use
+    :type idNum: int
+    :param theUnits:  Volts or Amps
+    :type theUnits: str
+    """
 
     def __init__(self, phasor, idNum, theUnits):
        self.options = None
@@ -86,12 +97,14 @@ class PhasorField():
        self.createPhasorFieldFrame()
 
     def parseOptions(self):
+        """Parse options and create bytes as hex str"""
         if self.units == "VOLTAGE":
             self.options = intToHexStr(0).zfill(4) 
         else:
             self.options = intToHexStr(2 ** 15)
         
     def createPhasorFieldFrame(self):
+        """Create phasor field frame inside full transfer frame"""
         fullFrameHexStr = "" 
         fullFrameHexStr += intToHexStr(self.ident).zfill(4)
         fullFrameHexStr += doubleToHexStr(self.value)
