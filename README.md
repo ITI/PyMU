@@ -3,6 +3,12 @@ Python C37.118 data parser.  Contains tools for connecting to PMUs and receiving
 # Full documentation
 http://pythonhosted.org/PyMU/
 
+# Installation
+
+```
+pip install PyMU
+```
+
 # Quickstart
 Quick demo of how to connect to a PMU and start capturing data
 
