@@ -6,14 +6,14 @@ Full documentation at http://pythonhosted.org/PyMU/
 
 ### Get Config Frame
 
-``python
+```
 import pymu.tools as tools
 confFrame = tools.startDataCapture(frameId, port, tcpPort)
 ```
 
 ### Get Data Frame
 
-``python
+```
 from pymu.pmuDataFrame import DataFrame
 from pymu.client import Client
 cli = Client(ip, tcpPort, "TCP")
