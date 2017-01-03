@@ -4,6 +4,7 @@ Python C37.118 data parser.  Contains tools for connecting to PMUs and receiving
 http://pythonhosted.org/PyMU/
 
 # Installation
+* Must use Python 3.0+
 
 ```
 pip install PyMU
