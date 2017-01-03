@@ -30,4 +30,4 @@ dataSample = tools.getDataSample(cli)
 dataFrame = DataFrame(dataSample, confFrame)
 ```
 
-You are now able to dive into all the fields of the data frame and config frame in real time.  The example provided writes all the phasor values, frequencies, and ROCOF a csv file.  
+You are now able to dive into all the fields of the data frame and config frame in real time.  The example provided (/examples/pmuToCsv.py) writes all the phasor values, frequencies, and ROCOF a csv file.  
