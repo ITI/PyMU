@@ -6,9 +6,35 @@
 Welcome to PyMU's documentation!
 ================================
 
-This library is used for accessing C37.118 data in real-time.  The library is based on the C37.118.2-2011 standard.  There are several tools which can be used to connect to relays and read data as well as an example file which demonstrates how to connect to a relay and store the data in a CSV file.
+This library is used for accessing C37.118 data in real-time.  The library is based on the C37.118.2-2011 standard and knowing that standard makes understanding this library much easier.
 
-Contents:
+Installation
+------------
+* Must use Python 3.0+::
+
+    pip install PyMU
+
+Quickstart
+----------
+Quick demo of how to connect to a PMU and start capturing data.  A basic understanding of TCP/UDP, Client/Server, and PMU configuration is assumed.
+
+* Get Config Frame::
+
+    import pymu.tools as tools
+    confFrame = tools.startDataCapture(frameId, port, tcpPort)
+
+* Get Data Frame::
+
+    from pymu.pmuDataFrame import DataFrame
+    from pymu.client import Client
+    cli = Client(ip, tcpPort, "TCP")
+    dataSample = tools.getDataSample(cli)
+    dataFrame = DataFrame(dataSample, confFrame)
+
+You are now able to dive into all the fields of the data frame and config frame in real time.  The example provided (/examples/pmuToCsv.py) writes all the phasor values, frequencies, and ROCOF a csv file.  
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -19,7 +45,7 @@ Contents:
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
