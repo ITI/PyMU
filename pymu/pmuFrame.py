@@ -66,9 +66,11 @@ class PMUFrame:
 
     def parseFRACSEC(self):
         """Parse fraction of second and time quality word"""
-        fracsecSize = 8
-        self.fracsec = int(self.frame[self.length:self.length+fracsecSize], 16)
-        self.updateLength(fracsecSize)
+        fracsecSize = 6
+        messageTimeQualitySize = 2
+        self.message_time_quality = int(self.frame[self.length:self.length + messageTimeQualitySize], 16)
+        self.fracsec = int(self.frame[self.length + messageTimeQualitySize:self.length + messageTimeQualitySize + fracsecSize], 16)
+        self.updateLength(messageTimeQualitySize + fracsecSize)
         print("FRACSEC: ", self.fracsec) if self.dbg else None
 
     def parseCHK(self):

@@ -120,7 +120,7 @@ class Station:
     def parseSTN(self):
         """Parses station name field"""
         l = 32
-        self.stn = bytes.fromhex(self.stationFrame[self.length:self.length+l]).decode('ascii')
+        self.stn = bytes.fromhex(self.stationFrame[self.length:self.length+l]).decode('ascii').replace('\x00', '')
         self.updateLength(l)
         print("STN: ", self.stn, sep="") if self.dbg else None
 
