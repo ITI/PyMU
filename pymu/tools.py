@@ -79,7 +79,7 @@ def getDataSample(rcvr, debug=False):
     '''
     fullHexStr = ""
 
-    if type(rcvr) == "client":
+    if isinstance(rcvr, Client):
         introHexStr = bytesToHexStr(rcvr.readSample(4))
         lenToRead = int(introHexStr[5:], 16)
         remainingHexStr = bytesToHexStr(rcvr.readSample(lenToRead))
