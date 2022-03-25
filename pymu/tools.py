@@ -80,8 +80,10 @@ def getDataSample(rcvr, debug=False):
     fullHexStr = ""
 
     if isinstance(rcvr, Client):
-        introHexStr = bytesToHexStr(rcvr.readSample(4))
-        lenToRead = int(introHexStr[5:], 16)
+        introHexStrSize = 4
+        introHexStr = bytesToHexStr(rcvr.readSample(introHexStrSize))
+        totalFrameLength = int(introHexStr[5:], 16)
+        lenToRead = totalFrameLength - introHexStrSize
         remainingHexStr = bytesToHexStr(rcvr.readSample(lenToRead))
 
         fullHexStr = introHexStr + remainingHexStr
